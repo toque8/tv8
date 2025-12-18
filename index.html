@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TV8</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+    #tv-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .btn {
+      position: absolute;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 2;
+    }
+    #power-btn { top: 82%; left: 24%; width: 4%; height: 4%; }
+    #channel1-btn { top: 30%; left: 75%; width: 3%; height: 3%; }
+    #channel2-btn { top: 40%; left: 75%; width: 3%; height: 3%; }
+    #channel3-btn { top: 50%; left: 75%; width: 3%; height: 3%; }
+    #channel4-btn { top: 60%; left: 75%; width: 3%; height: 3%; }
+
+    #screen {
+      position: absolute;
+      top: 45%;
+      left: 45%;
+      transform: translate(-50%, -50%) translateX(2.3vw);
+      width: 86vmin;
+      height: 59.25vmin;
+      aspect-ratio: 4 / 3;
+      max-width: 80%;
+      max-height: 60%;
+      z-index: 2;
+      overflow: hidden;
+    }
+    #screen video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      background: #000;
+      outline: none;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <img id="tv-bg" src="1.jpg" alt="" decoding="async">
+
+  <div id="screen">
+    <video id="current-video" muted playsinline autoplay loop disablePictureInPicture controlslist="nodownload nofullscreen noremoteplayback"></video>
+  </div>
+
+  <button class="btn" id="power-btn" onclick="togglePower()"></button>
+  <button class="btn" id="channel1-btn" onclick="setChannel('fire')"></button>
+  <button class="btn" id="channel2-btn" onclick="setChannel('rain')"></button>
+  <button class="btn" id="channel3-btn" onclick="setChannel('ocean')"></button>
+  <button class="btn" id="channel4-btn" onclick="setChannel('forest')"></button>
+
+  <!-- Звуки кнопок -->
+  <audio id="power-sound" src="buttons/1.mp3" preload="auto"></audio>
+  <audio id="switch-sound" src="buttons/2.mp3" preload="auto"></audio>
+
+  <!-- Два аудио-плеера для фонового звука -->
+  <audio id="audio1" preload="auto"></audio>
+  <audio id="audio2" preload="auto"></audio>
+
+  <script>
+    const powerSound = document.getElementById('power-sound');
+    const switchSound = document.getElementById('switch-sound');
+    const audio1 = document.getElementById('audio1');
+    const audio2 = document.getElementById('audio2');
+    const currentVideo = document.getElementById('current-video');
+
+    let isPoweredOn = false;
+    let activePlayer = audio1;
+    let nextPlayer = audio2;
+    let currentTrack = null;
+
+    // Функция для бесшовного воспроизведения
+    function playSeamless(trackUrl) {
+      // Остановить всё
+      audio1.pause();
+      audio2.pause();
+
+      // Загрузить оба плеера
+      audio1.src = trackUrl;
+      audio2.src = trackUrl;
+
+      audio1.load();
+      audio2.load();
+
+      // Сбросить флаги
+      audio1.loop = false;
+      audio2.loop = false;
+
+      // Первый запуск
+      activePlayer = audio1;
+      nextPlayer = audio2;
+      currentTrack = trackUrl;
+
+      // Запуск первого
+      activePlayer.play().catch(e => console.log("Play blocked"));
+
+      // Настройка цепочки
+      setupChain();
+    }
+
+    function setupChain() {
+      // Когда активный заканчивается — запускаем следующий
+      activePlayer.onended = () => {
+        // Меняем роли
+        const temp = activePlayer;
+        activePlayer = nextPlayer;
+        nextPlayer = temp;
+
+        // Запускаем следующий
+        activePlayer.currentTime = 0;
+        activePlayer.play().catch(e => {});
+
+        // Заново настраиваем цепочку
+        setupChain();
+      };
+    }
+
+    function togglePower() {
+      powerSound.currentTime = 0;
+      powerSound.play().catch(() => {});
+
+      if (!isPoweredOn) {
+        isPoweredOn = true;
+        currentVideo.src = 'video/static.mp4';
+        currentVideo.play().catch(() => {});
+        playSeamless('audio/static.mp3');
+      } else {
+        audio1.pause();
+        audio2.pause();
+        currentVideo.pause();
+        currentVideo.src = '';
+        isPoweredOn = false;
+      }
+    }
+
+    function setChannel(channel) {
+      if (!isPoweredOn) return;
+
+      switchSound.currentTime = 0;
+      switchSound.play().catch(() => {});
+
+      currentVideo.pause();
+      currentVideo.src = `video/${channel}.mp4`;
+      currentVideo.load();
+      currentVideo.play().catch(() => {});
+
+      playSeamless(`audio/${channel}.mp3`);
+    }
+  </script>
+</body>
+</html>
