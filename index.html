@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
@@ -13,7 +13,9 @@
       overflow: hidden;
       background: #000;
     }
-    #tv-bg {
+
+    /* Оба изображения */
+    #tv-bg-pc, #tv-bg-mobile {
       position: absolute;
       top: 0;
       left: 0;
@@ -24,6 +26,22 @@
       z-index: 1;
       pointer-events: none;
     }
+
+    /* На ПК — показываем 1.jpg */
+    #tv-bg-mobile {
+      display: none;
+    }
+
+    /* На мобильных — скрываем PC, показываем Mobile */
+    @media (max-width: 768px) {
+      #tv-bg-pc {
+        display: none;
+      }
+      #tv-bg-mobile {
+        display: block;
+      }
+    }
+
     .btn {
       position: absolute;
       background: transparent;
@@ -31,11 +49,22 @@
       cursor: pointer;
       z-index: 2;
     }
+
+    /* === КНОПКИ ДЛЯ ПК (как у тебя было) === */
     #power-btn { top: 82%; left: 24%; width: 4%; height: 4%; }
     #channel1-btn { top: 30%; left: 75%; width: 3%; height: 3%; }
     #channel2-btn { top: 40%; left: 75%; width: 3%; height: 3%; }
     #channel3-btn { top: 50%; left: 75%; width: 3%; height: 3%; }
     #channel4-btn { top: 60%; left: 75%; width: 3%; height: 3%; }
+
+    /* === КНОПКИ ДЛЯ МОБИЛЬНЫХ (под 2.jpg) === */
+    @media (max-width: 768px) {
+      #power-btn { top: 80%; left: 24%; width: 4%; height: 4%; } /* чуть выше */
+      #channel1-btn { top: 28%; left: 75%; width: 3%; height: 3%; }
+      #channel2-btn { top: 38%; left: 75%; width: 3%; height: 3%; }
+      #channel3-btn { top: 48%; left: 75%; width: 3%; height: 3%; }
+      #channel4-btn { top: 58%; left: 75%; width: 3%; height: 3%; }
+    }
 
     #screen {
       position: absolute;
@@ -50,6 +79,7 @@
       z-index: 2;
       overflow: hidden;
     }
+
     #screen video {
       width: 100%;
       height: 100%;
@@ -62,7 +92,9 @@
   </style>
 </head>
 <body>
-  <img id="tv-bg" src="1.jpg" alt="" decoding="async">
+  <!-- Два изображения -->
+  <img id="tv-bg-pc" src="1.jpg" alt="" decoding="async">
+  <img id="tv-bg-mobile" src="2.jpg" alt="" decoding="async">
 
   <div id="screen">
     <video id="current-video" muted playsinline autoplay loop disablePictureInPicture controlslist="nodownload nofullscreen noremoteplayback"></video>
@@ -94,48 +126,37 @@
     let nextPlayer = audio2;
     let currentTrack = null;
 
-    // Функция для бесшовного воспроизведения
     function playSeamless(trackUrl) {
-      // Остановить всё
       audio1.pause();
       audio2.pause();
 
-      // Загрузить оба плеера
       audio1.src = trackUrl;
       audio2.src = trackUrl;
 
       audio1.load();
       audio2.load();
 
-      // Сбросить флаги
       audio1.loop = false;
       audio2.loop = false;
 
-      // Первый запуск
       activePlayer = audio1;
       nextPlayer = audio2;
       currentTrack = trackUrl;
 
-      // Запуск первого
       activePlayer.play().catch(e => console.log("Play blocked"));
 
-      // Настройка цепочки
       setupChain();
     }
 
     function setupChain() {
-      // Когда активный заканчивается — запускаем следующий
       activePlayer.onended = () => {
-        // Меняем роли
         const temp = activePlayer;
         activePlayer = nextPlayer;
         nextPlayer = temp;
 
-        // Запускаем следующий
         activePlayer.currentTime = 0;
-        activePlayer.play().catch(e => {});
+        activePlayer.play().catch(() => {});
 
-        // Заново настраиваем цепочку
         setupChain();
       };
     }
