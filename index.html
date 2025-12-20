@@ -66,6 +66,7 @@
       #channel4-btn { top: 58%; left: 75%; width: 3%; height: 3%; }
     }
 
+    /* === ЭКРАН ТЕЛЕВИЗОРА === */
     #screen {
       position: absolute;
       top: 45%;
@@ -78,6 +79,17 @@
       max-height: 60%;
       z-index: 2;
       overflow: hidden;
+    }
+
+    /* На мобильных — немного уменьшаем размер экрана, чтобы он влезал в телевизор */
+    @media (max-width: 768px) {
+      #screen {
+        width: 70vmin;
+        height: 48.75vmin;
+        top: 48%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
     }
 
     #screen video {
