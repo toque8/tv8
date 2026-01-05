@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TV8</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="https://television8.vercel.app/favicon.ico" type="image/x-icon">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -14,7 +14,6 @@
       background: #000;
     }
 
-    /* Оба изображения */
     #tv-bg-pc, #tv-bg-mobile {
       position: absolute;
       top: 0;
@@ -27,12 +26,10 @@
       pointer-events: none;
     }
 
-    /* На ПК — показываем 1.jpg */
     #tv-bg-mobile {
       display: none;
     }
 
-    /* На мобильных — скрываем PC, показываем Mobile */
     @media (max-width: 768px) {
       #tv-bg-pc {
         display: none;
@@ -50,23 +47,20 @@
       z-index: 2;
     }
 
-    /* === КНОПКИ ДЛЯ ПК (как у тебя было) === */
     #power-btn { top: 82%; left: 24%; width: 4%; height: 4%; }
     #channel1-btn { top: 30%; left: 75%; width: 3%; height: 3%; }
     #channel2-btn { top: 40%; left: 75%; width: 3%; height: 3%; }
     #channel3-btn { top: 50%; left: 75%; width: 3%; height: 3%; }
     #channel4-btn { top: 60%; left: 75%; width: 3%; height: 3%; }
 
-    /* === КНОПКИ ДЛЯ МОБИЛЬНЫХ (под 2.jpg) === */
     @media (max-width: 768px) {
-      #power-btn { top: 62%; left: 14%; width: 4%; height: 4%; } /* чуть выше */
+      #power-btn { top: 62%; left: 14%; width: 4%; height: 4%; }
       #channel1-btn { top: 39.5%; left: 84.5%; width: 3%; height: 3%; }
       #channel2-btn { top: 44%; left: 84.5%; width: 3%; height: 3%; }
       #channel3-btn { top: 48%; left: 84.5%; width: 3%; height: 3%; }
       #channel4-btn { top: 53.8%; left: 84.5%; width: 3%; height: 3%; }
     }
 
-    /* === ЭКРАН ТЕЛЕВИЗОРА === */
     #screen {
       position: absolute;
       top: 44%;
@@ -81,7 +75,6 @@
       overflow: hidden;
     }
 
-    /* На мобильных — немного уменьшаем размер экрана, чтобы он влезал в телевизор */
     @media (max-width: 768px) {
       #screen {
         width: 63vmin;
@@ -104,9 +97,8 @@
   </style>
 </head>
 <body>
-  <!-- Два изображения -->
-  <img id="tv-bg-pc" src="1.jpg" alt="" decoding="async">
-  <img id="tv-bg-mobile" src="2.jpg" alt="" decoding="async">
+  <img id="tv-bg-pc" src="https://television8.vercel.app/1.jpg" alt="" decoding="async">
+  <img id="tv-bg-mobile" src="https://television8.vercel.app/2.jpg" alt="" decoding="async">
 
   <div id="screen">
     <video id="current-video" muted playsinline autoplay loop disablePictureInPicture controlslist="nodownload nofullscreen noremoteplayback"></video>
@@ -118,11 +110,9 @@
   <button class="btn" id="channel3-btn" onclick="setChannel('ocean')"></button>
   <button class="btn" id="channel4-btn" onclick="setChannel('forest')"></button>
 
-  <!-- Звуки кнопок -->
-  <audio id="power-sound" src="buttons/1.mp3" preload="auto"></audio>
-  <audio id="switch-sound" src="buttons/2.mp3" preload="auto"></audio>
+  <audio id="power-sound" src="https://television8.vercel.app/buttons/1.mp3" preload="auto"></audio>
+  <audio id="switch-sound" src="https://television8.vercel.app/buttons/2.mp3" preload="auto"></audio>
 
-  <!-- Два аудио-плеера для фонового звука -->
   <audio id="audio1" preload="auto"></audio>
   <audio id="audio2" preload="auto"></audio>
 
@@ -179,9 +169,9 @@
 
       if (!isPoweredOn) {
         isPoweredOn = true;
-        currentVideo.src = 'video/static.mp4';
+        currentVideo.src = 'https://television8.vercel.app/video/static.mp4';
         currentVideo.play().catch(() => {});
-        playSeamless('audio/static.mp3');
+        playSeamless('https://television8.vercel.app/audio/static.mp3');
       } else {
         audio1.pause();
         audio2.pause();
@@ -198,36 +188,12 @@
       switchSound.play().catch(() => {});
 
       currentVideo.pause();
-      currentVideo.src = `video/${channel}.mp4`;
+      currentVideo.src = `https://television8.vercel.app/video/${channel}.mp4`;
       currentVideo.load();
       currentVideo.play().catch(() => {});
 
-      playSeamless(`audio/${channel}.mp3`);
+      playSeamless(`https://television8.vercel.app/audio/${channel}.mp3`);
     }
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
